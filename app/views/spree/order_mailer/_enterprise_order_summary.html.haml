@@ -1,0 +1,32 @@
+%table.order-summary{:width => "100%"}
+  %thead
+    %tr
+      %th{:align => "left"}
+        %h4
+          = t :email_order_summary_item
+      %th{:align => "right", :width => "25%"}
+        %h4
+          = t :email_order_summary_quantity
+      %th{:align => "right", :width => "25%"}
+        %h4
+          = t :email_order_summary_price
+  %tbody
+    - @total = 0
+    - @items.each do |item|
+      %tr
+        %td
+          = render 'spree/shared/line_item_name', line_item: item
+        %td{:align => "right"}
+          = item.quantity
+        %td{:align => "right"}
+          - @total = @total + get_display_amount(item) 
+          = item.display_amount_with_adjustments
+  %tfoot
+    %tr
+      %td{:align => "right", :colspan => "2"}
+        %strong
+          = t :email_order_summary_total
+      %td{:align => "right"}
+        %strong= spree_number_to_currency(@total)
+%p &nbsp;
+

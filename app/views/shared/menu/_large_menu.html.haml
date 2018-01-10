@@ -1,0 +1,18 @@
+%nav.top-bar.show-for-large-up{'data-topbar' => true}
+  %section.top-bar-section
+    %h1.left{"style" => "display: inline; margin-left: -40px;"}
+      %a{href: root_path}
+        %img{"src" => "/ofn-logo.png", "width" => 350}
+    %ul.right
+      - if spree_current_user.nil?
+        = render 'shared/signed_out'
+      - else
+        = render 'shared/signed_in'
+      %li.current_hub{"ng-controller" => "CurrentHubCtrl", "ng-show" => "CurrentHub.hub.id", "ng-cloak" => true}
+        %a{href: main_app.shop_path}
+          %em
+            = t 'label_shopping'
+            &#64;
+          %span.nav-primary.nav-branded {{ CurrentHub.hub.name | truncate:25 }}
+      %li.cart{"ng-cloak" => true}
+        = render partial: "shared/menu/cart"

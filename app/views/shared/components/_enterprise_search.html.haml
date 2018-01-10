@@ -1,0 +1,15 @@
+#active-table-search.row
+  .small-12.columns
+    %input{type: :text,
+    "ng-model" => "query",
+    placeholder: t('search_by_name'),
+    "ng-debounce" => "500",
+    "ofn-disable-enter" => true,
+    "id" => "address_search"}
+
+%h3.text-center
+  = t :or
+
+#active-table-location.text-center
+  %button#get-user-location{"ng-click" => "searchWithUserLocation()"}
+    = t :hubs_click_here_and_we_will_find_you

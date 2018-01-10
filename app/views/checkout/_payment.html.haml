@@ -1,0 +1,48 @@
+%fieldset#payment
+  %ng-form{"ng-controller" => "PaymentCtrl", name: "payment"}
+
+    %h5{"ng-class" => "{valid: payment.$valid, dirty: payment.$dirty || submitted}"}
+      %span.right
+        %label.label.round.alert.right
+          %i.ofn-i_009-close
+        %label.label.round.success.right
+          %i.ofn-i_051-check-big
+      = t :checkout_payment
+
+    %accordion-group{"is-open" => "accordion.payment",
+      "ng-class" => "{valid: payment.$valid, open: accordion.payment}"}
+      = render 'checkout/accordion_heading'
+
+      -# TODO render this in Angular instead of server-side
+      -# The problem being how to render the partials
+      .row
+        .small-12.medium-12.large-6.columns
+          - available_payment_methods.each do |method|
+            .row
+              .small-12.columns
+                = hidden_field_tag "order[payments_attributes][][payment_method_id]", method.id, name: "order.payment_method_id",
+                  "ng-model" => "order.payment_method_id"
+
+                %small.error.medium.input-text{"ng-show" => "!fieldValid('order.payment_method_id')"}
+                  = "{{ fieldErrors('order.payment_method_id') }}"
+
+            .row{"ng-if" => "order.payment_method_id == #{method.id}"}
+              .small-12.columns
+                = render partial: "spree/checkout/payment/#{method.method_type}", :locals => { :payment_method => method }
+        .small-12.medium-12.large-6.columns
+          #credit_card_capture
+            = validated_input t(:credit_card), "order.credit_card", "placeholder" => "1234 5678 9012 3456", "pattern" => "[0-9]{13,16}"
+            .row
+              .small-6.medium-6.large-6.columns
+                = validated_select t(:expiry_month), "order.expiry_month", (1..12).to_a, "required" => true
+              .small-6.medium-6.large-6.columns
+                = validated_select t(:expiry_year), "order.expiry_year", (Date.current.year..(Date.current.year + 30)).to_a, "required" => true
+            = validated_input t(:cvv), "order.cvv", "type" => "number", "pattern" => "[0-9]{3}"
+        .small-12.medium-12.large-6.columns
+          #distributor_address.panel{"ng-show" => "Checkout.paymentMethod().description"}
+            %span.pre-wrap {{ Checkout.paymentMethod().description }}
+        .small-12.medium-12.columns
+          %p
+            You agree that if you fail to pick up your order by #{(DateTime.current + 3).strftime("%e %b %Y %H:%M")}, we’ll charge your credit card for the amount shown. Orders forfeited will be donated to local charities in your name.
+          %p
+            Payment card information is only gathered to ensure your order. Your card will not be charged at this time. Orders will be paid for at Market and your card will only be charged if you do not pick up your order or cancel after the cancellation deadline. Cancellations must be received by 4:00 pm Local Time the day before Market (ie. if the Market is Saturday, cancellation must be received by 4:00 pm Friday).

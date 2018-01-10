@@ -1,0 +1,59 @@
+%html
+  %head
+    %meta{charset: 'utf-8'}/
+    %meta{name: 'viewport', content: "width=device-width,initial-scale=1.0"}/
+    %meta{property: "og:title", content: content_for?(:title) ? yield(:title) : t(:title)}
+    %meta{property: "og:description", content: content_for?(:description) ? yield(:description) : t(:site_meta_description)}
+    %meta{property: "og:image", content: content_for?(:image) ? yield(:image) : ContentConfig.logo.url}
+    %title= content_for?(:title) ? "#{yield(:title)} - #{t(:title)}".html_safe : "#{t(:welcome_to)} #{t(:title)}"
+    - if Rails.env.production?
+      = favicon_link_tag
+    - else
+      = favicon_link_tag "/favicon-staging.ico"
+    %link{rel: "manifest", href: "/manifest.json"}
+    %link{href: "https://fonts.googleapis.com/css?family=Roboto:400,300italic,400italic,300,700,700italic|Oswald:300,400,700", rel: "stylesheet", type: "text/css"}
+
+    = yield :scripts
+    %script{src: "//maps.googleapis.com/maps/api/js?libraries=places,geometry,geocode#{ ENV['GOOGLE_MAPS_API_KEY'] ? '&key=' + ENV['GOOGLE_MAPS_API_KEY'] : ''} "}
+    %script{:type => "text/javascript"}
+      var MILES_TO_KMS = #{ENV['MILES_TO_KMS'].to_f};
+      var KMS_TO_MILES = #{ENV['KMS_TO_MILES'].to_f};
+
+    = split_stylesheet_link_tag "darkswarm/all"
+    = javascript_include_tag "darkswarm/all"
+
+    %script{src: "https://cdn.onesignal.com/sdks/OneSignalSDK.js", async: "async"}
+    %script{src: "/one-signal.js"}
+
+    = render "layouts/bugherd_script"
+    = csrf_meta_tags
+
+  %body.off-canvas{"ng-app" => "Darkswarm", "map-kms" => "#{ENV['SHOPES_NEAR_MILES'].to_f * ENV['MILES_TO_KMS'].to_f}"}
+    / [if lte IE 8]
+      = render partial: "shared/ie_warning"
+      = javascript_include_tag "iehack"
+
+    = inject_current_hub
+    = inject_json "user", "current_user"
+    = inject_json "railsFlash", "flash"
+    = inject_taxons
+    = inject_properties
+    = inject_current_order
+    = inject_currency_config
+
+    .off-canvas-wrap{offcanvas: true}
+      .inner-wrap
+        = render "shared/menu/menu"
+
+        %section{ role: "main" }
+          = yield
+
+          #footer
+    %loading
+    = render 'spree/shared/google_analytics'
+    :javascript
+      (function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
+        w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},a=d.createElement(t),
+        m=d.getElementsByTagName(t)[0];a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','http://52.21.225.233/mautic/mtc.js','mt');
+      mt('send', 'pageview');

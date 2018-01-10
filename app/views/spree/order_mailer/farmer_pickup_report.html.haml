@@ -1,0 +1,91 @@
+%table.social.white-bg{:width => "100%"}
+  %tr
+    %td
+      %table.column{:align => "left"}
+        %tr
+          %td
+            %h3
+              Products Report
+      %table.column{:align => "left"}
+        %tr
+          %td{:align => "right"}
+            %img.float-right{:src => "#{@supplier.logo.url(:medium)}"}/
+      %span.clear
+
+%p &nbsp;
+%table.order-summary{:width => "100%"}
+  %thead
+    %tr
+      %th{:align => "left"}
+        %h4
+          = t :email_order_summary_item
+      %th{:align => "right", :width => "25%", :colspan => "2"}
+        %h4
+          = t :email_order_summary_quantity
+  - total = 0
+  %tbody
+    - @products.keys.each do |variant|
+      - if @products[variant].present?
+        %tr
+          %td
+            = render 'spree/shared/line_item_name', line_item: @products[variant].first
+          %td{:align => "right", :width => "25%", :colspan => "2"}
+            - total = total + supplied_products_quantity(@products[variant])
+            = supplied_products_quantity(@products[variant])
+  %tfoot
+    %tr
+      %td{:align => "right", :colspan=> '2' }
+      %td{:align => "right"}
+        %strong
+          = t :email_order_summary_total
+          = total
+%p &nbsp;
+
+%table.social.white-bg{:width => "100%"}
+  %tr
+    %td
+      %table.column{:align => "left"}
+        %tr
+          %td
+            %h3
+              Customer Report
+      %table.column{:align => "left"}
+        %tr
+          %td{:align => "right"}
+            %img.float-right{:src => "#{@supplier.logo.url(:medium)}"}/
+      %span.clear
+
+%p &nbsp;
+%table.order-summary{:width => "100%"}
+  %thead
+    %tr
+      %th{:align => "left"}
+        %h4
+          = t :email_order_summary_item
+      %th{:align => "right", :width => "25%", :colspan => "2"}
+        %h4
+          = t :email_order_summary_quantity
+  %tbody
+    - total = 0
+    - @order_by_customers.each do |group|
+      - if group.present?
+        %tr
+          %td
+            %h5.inline-header= get_customer_name(group.keys.first)
+        - group.values.flatten.each do |order|
+          - order.line_items.each do |item|
+            - if @line_items.map(&:variant_id).include?(item.variant_id)
+              %tr
+                %td
+                  = render 'spree/shared/line_item_name', line_item: item
+                %td{:align => "right", :width => "25%", :colspan => "2"}
+                  - total = total + item.quantity
+                  = item.quantity
+  %tfoot
+    %tr
+      %td{:align => "right", :colspan=> '2' }
+      %td{:align => "right"}
+        %strong
+          = t :email_order_summary_total
+          = total
+%p &nbsp;

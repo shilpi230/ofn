@@ -1,0 +1,54 @@
+= inject_enterprises
+
+#hubs.hubs{"ng-controller" => "EnterprisesCtrl", "ng-cloak" => true}
+  .row
+    .small-12.columns
+      %h1{"scroll-after-load" => (spree_current_user ? true : nil)}
+        = t :hubs_intro
+
+  = render "shared/components/enterprise_search"
+
+  .row
+    .small-12.columns
+      .name-matches{"ng-show" => "nameMatchesFiltered.length > 0"}
+        %h2
+          = t :hubs_matches
+        = render "hubs_table", enterprises: "nameMatches"
+
+      .distance-matches{"ng-if" => "nameMatchesFiltered.length == 0 || distanceMatchesShown"}
+        %h2{"ng-show" => "distanceMatches.length > 0"}
+          = "And here are the markets near"
+          %span{"ng-show" => "nameMatchesFiltered.length > 0"} {{ nameMatchesFiltered[0].name }}...
+          %span{"ng-hide" => "nameMatchesFiltered.length > 0"} {{ query }}...
+
+        = render "hubs_table", enterprises: "distanceMatches"
+
+      .show-distance-matches{"ng-show" => "nameMatchesFiltered.length > 0 && !distanceMatchesShown"}
+        %a{href: "", "ng-click" => "showDistanceMatches()"}
+          = t :hubs_distance_filter, location: "{{ nameMatchesFiltered[0].name }}"
+
+  .row
+    .small-12.columns
+      = "Or you can look around:"
+      %input{type: :number,
+      "ofn-disable-enter" => true,
+      "id" => "change_miles",
+      "style" => "width: 60px; display: inline",
+      "value" => ENV['SHOPES_NEAR_MILES'],
+      "ng-click" => "userMilesChange($event)"}
+      = "Miles from your location"
+  .more-controls
+    %a.button{href: "", ng: {click: "showClosedShops()", show: "filterExpression.active"}}
+      = t '.show_closed_shops'
+    %a.button{href: "", ng: {click: "hideClosedShops()", show: "!filterExpression.active"}}
+      = t '.hide_closed_shops'
+    %a.button{href: main_app.map_path}= t '.show_on_map'
+
+  .row
+    .small-12.columns
+      .map-container{"style" => "height: 400px;"}
+        %map{"ng-controller" => "MapCtrl"}
+          %google-map{options: "map.additional_options", center: "map.center", zoom: "map.zoom", styles: "map.styles", draggable: "true"}
+            %map-osm-tiles
+            %markers{models: "mapMatches", fit: "true",
+            coords: "'self'", icon: "'icon'", click: "'reveal'"}

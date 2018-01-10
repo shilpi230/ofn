@@ -1,0 +1,32 @@
+- content_for :page_actions do
+  = button_link_to 'Send pickup reminder', '/admin/send_pickup_email', icon: 'icon-email'
+  = button_link_to 'Send subscription email', '/admin/send_subscription_email', icon: 'icon-email'
+  = render 'admin/shared/user_guide_link'
+
+
+%div{ 'ng-app' => 'ofn.admin' }
+  %h1{ :style => 'margin-bottom: 30px' }
+    = t "dashbord"
+
+  - if @enterprises.unconfirmed.any?
+
+    = render partial: "unconfirmed"
+
+    %hr
+
+  - if @enterprises.empty?
+
+    = render partial: "enterprises"
+
+  - else
+
+    - if can? :admin, Spree::Product
+      = render partial: "products"
+
+      %div.two.columns
+        &nbsp;
+
+    - if can? :admin, OrderCycle
+      = render partial: "order_cycles"
+
+    = render partial: "enterprises"

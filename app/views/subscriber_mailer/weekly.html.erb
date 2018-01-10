@@ -1,0 +1,15 @@
+<p>Here's what's available this week at the <%=@order_cycle.coordinator.try(:name) %> for pickup on <%=@market_day %>. Place your orders from <%=@order_cycle.coordinator.try(:name) %> farmers and vendors by <%=@order_cycle.orders_close_at.strftime('%d %b %Y, %I:%M %p') %> and your farmers will have them ready for pickup.</p>
+<% @enterprise_products.each do |ep| %>
+  <% next if ep.nil? %>
+  <h3><%= link_to ep[:enterprise].name, enterprise_shop_url(ep[:enterprise]) %></h3>
+  <ul>
+    <% ep[:products].each do |prod| %>
+      <li>
+      	<%= prod.name %> 
+      	<%= spree_number_to_currency(prod.price) %>/
+      	<%= get_product_unit[prod.variant_unit][prod.variant_unit_scale] %>
+    </li>
+    <% end %>
+  </ul>
+<% end %>
+<%= link_to 'Unsubscribe', unsubscribe_path(email: @email) %>
