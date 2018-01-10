@@ -52,6 +52,6 @@ class ContentConfiguration < Spree::Preferences::FileConfiguration
 [Calendar](/)
 EOS
 
-  preference :footer_about_url, :string, default: "http://www.openfoodnetwork.org/ofn-local/open-food-network-australia/"
+  preference :footer_about_url, :string, default: "#"
   preference :footer_tos_url, :string, default: "/Terms-of-service.pdf"
 end

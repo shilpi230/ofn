@@ -57,6 +57,7 @@ gem 'blockenspiel'
 gem 'acts-as-taggable-on', '~> 3.4'
 gem 'paper_trail', '~> 3.0.8'
 gem 'diffy'
+gem 'stripe'
 
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
@@ -66,8 +67,6 @@ gem 'immigrant'
 gem 'roo', '~> 2.7.0'
 
 gem 'whenever', require: false
-
-gem 'stripe'
 
 # Gems used only for assets and not required
 # in production environments by default.
